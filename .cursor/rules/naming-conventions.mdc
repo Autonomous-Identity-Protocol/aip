@@ -1,0 +1,45 @@
+---
+description: Naming conventions across the entire codebase
+alwaysApply: true
+---
+
+# Naming Conventions
+
+## Files
+
+- TypeScript files: `kebab-case.ts` (e.g., `token-issuer.ts`, `verify-assertion.ts`)
+- React components: `kebab-case.tsx` matching the primary export (e.g., `entity-card.tsx` exports `EntityCard`)
+- Test files: `<name>.test.ts` co-located next to source files
+- Schema files: `schema.ts` inside the relevant module directory
+
+## Code Identifiers
+
+- Functions and variables: `camelCase` (`verifyToken`, `entityId`)
+- React components: `PascalCase` (`EntityCard`, `DashboardLayout`)
+- Types and interfaces: `PascalCase`, no prefix (`Owner`, not `IOwner`)
+- Constants (true immutables): `UPPER_SNAKE_CASE` (`TOKEN_TTL_SECONDS`, `AIP_ISSUER_URL`)
+- Config objects: `camelCase` (`defaultConfig`, `rateLimitOptions`)
+
+## Database
+
+- Tables: `snake_case`, plural (`owners`, `entities`, `issuer_keys`, `audit_logs`)
+- Columns: `snake_case` (`owner_id`, `created_at`, `public_key_jwk`)
+- Enums (in DB): `snake_case` values (`active`, `revoked`, `suspended`)
+
+## API
+
+- REST endpoints: lowercase, hyphen-separated, `/v1/` prefixed for versioned routes
+- Query parameters: `snake_case` (`entity_id`, `page_size`)
+- JSON response fields: `snake_case` to match database conventions
+
+## Environment Variables
+
+- `UPPER_SNAKE_CASE`, prefixed by domain:
+  - `AIA_*` for AIA issuer config (`AIA_ISSUER_URL`, `AIA_ISSUER_KEY_ENCRYPTION_KEY`)
+  - `DATABASE_*` for database (`DATABASE_URL`)
+  - `NEXTAUTH_*` for Auth.js (`NEXTAUTH_SECRET`, `NEXTAUTH_URL`)
+
+## Packages
+
+- npm scope: `@aip/<kebab-case>` (`@aip/core`, `@aip/verify`, `@aip/next`)
+- Internal package directories: `packages/<kebab-case>/`

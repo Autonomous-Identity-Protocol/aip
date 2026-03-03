@@ -1,0 +1,49 @@
+---
+description: React and Next.js patterns for the portal app
+globs: "apps/portal/**/*.tsx,apps/portal/**/*.ts"
+alwaysApply: false
+---
+
+# React & Next.js Patterns
+
+## Server vs Client
+
+- Server Components by default. Only add `'use client'` when the component needs browser APIs, event handlers, or hooks.
+- Never fetch data in client components. Lift data fetching to Server Components or route handlers.
+- Keep client components small and leaf-level.
+
+## Component Structure
+
+Order within a component file:
+
+1. Imports
+2. Types/interfaces specific to this component
+3. Component function
+4. Helper functions (non-exported)
+
+One component per file. Co-locate sub-components only if they are tightly coupled and not reused.
+
+## Styling
+
+- Tailwind CSS only. No inline `style` props, no CSS modules.
+- Use `cn()` utility (from `@/lib/utils`) for conditional class merging.
+- Design tokens come from Tailwind config — do not hardcode colors or spacing values.
+
+## Data Fetching
+
+- Use `async` Server Components for data loading.
+- Wrap async data sections in `<Suspense>` with meaningful fallbacks.
+- Use `Promise.all()` for parallel independent fetches.
+- Cache with `React.cache()` for per-request deduplication.
+
+## Forms
+
+- Use Server Actions with `useActionState` for form handling.
+- Validate inputs server-side with Zod before processing.
+- Return structured results from actions, not redirects (unless appropriate).
+
+## Performance
+
+- Use `next/dynamic` for heavy client components not needed on initial render.
+- Images via `next/image` — always specify `width`, `height`, or `fill`.
+- No anonymous functions in JSX props of memoized components.

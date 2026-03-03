@@ -1,0 +1,58 @@
+---
+description: TypeScript coding standards for clean, type-safe code
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+## Strict Typing
+
+- `strict: true` in every `tsconfig.json`. No exceptions.
+- Never use `any`. Use `unknown` with type guards or explicit narrow types.
+- Explicit return types on all exported functions.
+- Use `satisfies` for type-safe object literals when inference is sufficient.
+
+## Types vs Interfaces
+
+- Use `interface` for object shapes that may be extended.
+- Use `type` for unions, intersections, mapped types, and utility types.
+- No `I` prefix on interfaces. No `T` prefix on types.
+
+## Error Handling
+
+Use the Result pattern for operations with expected failure modes:
+
+```typescript
+type Result<T, E = Error> =
+  | { ok: true; data: T }
+  | { ok: false; error: E };
+```
+
+Use exceptions (throw) only for truly unexpected/programmer errors. Catch at boundaries (API routes, middleware).
+
+## Zod Schemas
+
+- Zod schemas are the single source of truth for runtime validation.
+- Derive TypeScript types from schemas with `z.infer<typeof schema>`.
+- Co-locate schemas next to the code that uses them.
+
+## Enums
+
+- Do not use TypeScript `enum`. Use `as const` objects or string literal unions.
+
+```typescript
+const Status = { Active: "active", Revoked: "revoked", Suspended: "suspended" } as const;
+type Status = (typeof Status)[keyof typeof Status];
+```
+
+## Functions
+
+- Prefer `function` declarations for top-level exported functions (hoisting, stack traces).
+- Use arrow functions for inline callbacks and short expressions.
+- Max 3 positional parameters. Use an options object beyond that.
+
+## Assertions
+
+- Never use non-null assertions (`!`). Use explicit checks or `invariant()`.
+- Type narrowing via control flow is preferred over type assertions (`as`).

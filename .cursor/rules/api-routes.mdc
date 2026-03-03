@@ -1,0 +1,62 @@
+---
+description: API route conventions for the AIA backend
+globs: "apps/portal/src/app/api/**/*.ts"
+alwaysApply: false
+---
+
+# API Route Conventions
+
+## Response Shape
+
+All API routes return consistent JSON:
+
+```typescript
+// Success
+{ "data": { ... } }
+
+// Error
+{ "error": { "code": "ENTITY_NOT_FOUND", "message": "Entity with ID xyz not found." } }
+```
+
+Never return bare values or arrays at the top level.
+
+## Input Validation
+
+- Validate all inputs (body, query params, route params) with Zod at the top of the handler.
+- Return 400 with the validation error details on failure.
+
+## HTTP Status Codes
+
+- 200: success with body
+- 201: resource created
+- 204: success, no body
+- 400: invalid input
+- 401: missing or invalid authentication
+- 403: authenticated but not authorized
+- 404: resource not found
+- 409: conflict (duplicate entity name, etc.)
+- 429: rate limited
+- 500: unexpected server error (log the full error, return generic message)
+
+## Route Handler Structure
+
+```typescript
+export async function POST(request: NextRequest) {
+  // 1. Parse and validate input
+  // 2. Authenticate (check session/token)
+  // 3. Authorize (check ownership/permissions)
+  // 4. Delegate to service function in lib/
+  // 5. Return structured response
+}
+```
+
+## Business Logic
+
+- Route handlers are thin. All business logic lives in `src/lib/` service modules.
+- Route handlers handle HTTP concerns only: parsing, auth checks, status codes, response formatting.
+
+## Auth
+
+- Owner-authenticated routes: verify NextAuth session via `auth()`.
+- Public AIA endpoints (`/oauth/token`, `/.well-known/*`, `/status`): no session required.
+- Entity management routes (`/v1/entities/*`): require owner session + ownership check.

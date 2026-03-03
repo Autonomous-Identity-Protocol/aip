@@ -1,0 +1,50 @@
+---
+description: Core architecture rules for the AIP monorepo
+alwaysApply: true
+---
+
+# Project Architecture
+
+## Monorepo Structure
+
+- `apps/portal/` — Next.js 15 app (registeragent.id dashboard + AIA API)
+- `packages/` — publishable npm packages (`@aip/*`)
+- `examples/` — standalone example apps demonstrating SDK usage
+
+## Import Order
+
+Enforce this order in every file, separated by blank lines:
+
+1. Node built-ins (`node:crypto`, `node:path`)
+2. External dependencies (`jose`, `zod`, `drizzle-orm`)
+3. Workspace packages (`@aip/core`, `@aip/verify`)
+4. Relative imports (`./utils`, `../types`)
+
+## Import Rules
+
+- No barrel file re-exports. Import directly from the source module.
+- Use path aliases: `@/` maps to `src/` in the portal app.
+- Workspace packages are imported by name (`@aip/core`), never by relative path.
+
+## Export Rules
+
+- Use named exports everywhere.
+- Default exports are only allowed for Next.js pages, layouts, route handlers, and `next.config.ts`.
+
+## Documentation
+
+- Every exported function, class, and type must have a JSDoc comment.
+- JSDoc must include `@param` and `@returns` for functions.
+- Internal helpers do not need JSDoc unless the logic is non-obvious.
+
+## Error Philosophy
+
+- Error messages must be actionable: say what went wrong and what to do about it.
+- Use structured error classes extending `AipError` from `@aip/core`.
+- Never swallow errors silently. Log or rethrow.
+
+## Dependencies
+
+- Minimize dependencies. Justify every new package.
+- Pin exact versions in workspace root. Use `catalog:` protocol in `pnpm-workspace.yaml` for shared versions.
+- Security-sensitive operations use `jose` (JWT/JOSE) and Node.js `crypto` — no other crypto libraries.

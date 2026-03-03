@@ -1,0 +1,53 @@
+---
+description: Drizzle ORM and database conventions
+globs: "**/db/**/*.ts,**/drizzle/**/*.ts"
+alwaysApply: false
+---
+
+# Database Conventions
+
+## Naming
+
+- Table names: `snake_case`, plural (`owners`, `entities`, `issuer_keys`)
+- Column names: `snake_case` (`created_at`, `public_key_jwk`, `owner_id`)
+- Foreign keys: `<referenced_table_singular>_id` (e.g., `owner_id`)
+
+## Schema Patterns
+
+Every table must include:
+
+```typescript
+createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull().$onUpdate(() => new Date()),
+```
+
+## Type Derivation
+
+Derive TypeScript types from Drizzle schemas — never duplicate type definitions:
+
+```typescript
+export type Owner = typeof owners.$inferSelect;
+export type NewOwner = typeof owners.$inferInsert;
+```
+
+## Query Organization
+
+- Define query functions in dedicated files under `src/lib/db/queries/`.
+- Group by domain: `owners.ts`, `entities.ts`, `issuer-keys.ts`.
+- Each function takes explicit parameters — no raw request objects.
+
+## Transactions
+
+- Use `db.transaction()` for any operation that modifies multiple tables.
+- Keep transactions short — no external API calls inside transactions.
+
+## Migrations
+
+- Use Drizzle Kit for migration generation: `drizzle-kit generate`.
+- Never manually edit generated migration SQL.
+- Migration files are committed to version control.
+
+## Indexes
+
+- Add indexes on foreign keys and frequently queried columns.
+- Add unique constraints at the database level, not just application level.

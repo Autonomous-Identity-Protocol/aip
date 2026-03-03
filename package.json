@@ -1,0 +1,15 @@
+{
+  "name": "aip",
+  "private": true,
+  "description": "Autonomous Identity Protocol — SDK packages and examples",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

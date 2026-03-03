@@ -1,0 +1,44 @@
+---
+description: Conventions for @aip/* SDK packages
+globs: "packages/**/*.ts"
+alwaysApply: false
+---
+
+# SDK Package Conventions
+
+## Package Size
+
+- Minimize dependencies. Each package should have as few runtime dependencies as possible.
+- `@aip/core` has zero runtime dependencies (types, constants, error classes only).
+- `@aip/verify` depends only on `jose` and `@aip/core`.
+
+## Runtime Compatibility
+
+- `@aip/core` and `@aip/verify` must work in all runtimes: Node.js, Deno, Bun, Cloudflare Workers, Vercel Edge.
+- Do not use Node.js-specific APIs (`fs`, `path`, `crypto` from `node:`) in these packages.
+- Use Web Crypto API (`crypto.subtle`) or `jose` abstractions instead.
+- Node.js-specific packages (`@aip/express`) may use Node.js APIs.
+
+## Build & Exports
+
+- Build with `tsup`. Output both ESM and CJS.
+- Single `src/index.ts` entry point per package.
+- `package.json` must specify `exports`, `main`, `module`, `types` fields.
+
+## Public API
+
+- Every exported function, class, and type must have JSDoc with `@example`.
+- Err on the side of fewer exports. Internal helpers are not exported.
+- Use explicit named exports — no `export *`.
+
+## Error Handling
+
+- All SDK error classes extend `AipError` from `@aip/core`.
+- Error classes must include a `code` property (string enum) for programmatic handling.
+- User-facing error messages must be clear and suggest a fix.
+
+## Versioning
+
+- Follow semantic versioning strictly.
+- Breaking changes require a major version bump.
+- Maintain a CHANGELOG.md in each package root.
